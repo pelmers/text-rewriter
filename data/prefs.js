@@ -4,27 +4,30 @@ var tag = "rewrites",
     save = document.getElementById("save_button"),
     add = document.getElementById("add_button");
 
+// Make an input inside of a td element with given value and checked
+function makeTD(type, value, checked) {
+    var td = document.createElement('td'),
+        inp = document.createElement('input');
+    inp.type = type;
+    if (value)
+        inp.value = value;
+    if (checked !== undefined)
+        inp.checked = checked;
+    td.appendChild(inp);
+    return td;
+}
+
 // Append a row to the table with given values for inputs.
-function appendRow(fr, to, ic) {
+function appendRow(fr, to, ic, mw) {
     var tr = document.createElement("tr"),
-    phrase = document.createElement("td"),
-    phrase_in = document.createElement("input");
-    replace = document.createElement("td"),
-    replace_in = document.createElement("input");
-    ignore_case = document.createElement("td"),
-    case_box = document.createElement("input");
-    case_box.type = "checkbox";
-    phrase_in.type = "text";
-    replace_in.type = "text";
-    phrase_in.value = fr;
-    replace_in.value = to;
-    case_box.checked = ic;
-    phrase.appendChild(phrase_in);
-    replace.appendChild(replace_in);
-    ignore_case.appendChild(case_box);
+        phrase = makeTD("text", fr),
+        replace = makeTD("text", to);
+        case_box = makeTD("checkbox", null, ic);
+        whole_box = makeTD("checkbox", null, mw);
     tr.appendChild(phrase);
     tr.appendChild(replace);
-    tr.appendChild(ignore_case);
+    tr.appendChild(case_box);
+    tr.appendChild(whole_box);
     table.appendChild(tr);
 }
 
@@ -39,7 +42,8 @@ save.addEventListener('click', function() {
         data.push({
             "from": d[0].value,
             "to": d[1].value,
-            "ic": d[2].checked
+            "ic": d[2].checked,
+            "mw": d[3].checked
         });
     }
     self.port.emit(tag_out, JSON.stringify(data));
@@ -57,6 +61,7 @@ self.port.on(tag, function(data) {
         var fr = replacements[i].from,
             to = replacements[i].to,
             ic = replacements[i].ic;
-        appendRow(fr, to, ic)
+            mw = replacements[i].mw;
+        appendRow(fr, to, ic, mw)
     }
 });
