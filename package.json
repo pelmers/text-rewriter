@@ -1,9 +1,15 @@
 {
   "name": "text-rewriter",
-  "title": "text-rewriter",
+  "title": "Text Rewriter",
   "id": "jid1-SH1E6mmYtBsebw",
-  "description": "a basic add-on",
-  "author": "",
+  "description": "Replace specified phrases on a page",
+  "author": "new_one",
   "license": "MPL 2.0",
-  "version": "0.1"
+  "version": "0.1.1",
+  "preferences": [{
+      "name": "Preferences",
+      "title": "Manage rewrite patterns",
+      "label": "Preferences",
+      "type": "control"
+  }]
 }
