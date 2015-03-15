@@ -71,4 +71,8 @@ self.port.on(tag, function(data) {
             mw = replacements[i].mw;
         appendRow(fr, to, ic, mw)
     }
+    // make sure we have at least 3 rows in the table
+    for (var i = replacements.length; i < 3; i++) {
+        appendRow("", "", false, false);
+    }
 });

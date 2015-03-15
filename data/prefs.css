@@ -27,15 +27,25 @@ td, th {
 }
 
 /* borrowed from: https://css-tricks.com/responsive-data-tables/ */
-@media
-only screen and (max-width: 760px),
-(min-device-width: 768px) and (max-device-width: 1024px)  {
-
+@media all and (max-device-width: 719px) {
   /* Force table to not be like tables anymore */
   table, thead, tbody, th, td, tr {
     display: block;
   }
-
+  #pref_table, .button_group, .info_message {
+    margin-left: 0;
+  }
+  #pref_table {
+    width: auto;
+  }
+  .button_group, .info_message, #saved_text {
+    font-size: 2em;
+  }
+  .button_group > button {
+    width: 38%;
+    height: 30px;
+    font-weight: bold;
+  }
   /* Hide table headers (but not display: none;, for accessibility) */
   th {
     position: absolute;
@@ -53,18 +63,12 @@ only screen and (max-width: 760px),
     padding-left: 40%;
   }
 
-  /* don't let the text inputs overflow */
-  td input[type="text"] {
-    width: 95%;
-  }
-
   td:before {
     /* Now like a table header */
     position: absolute;
     /* Top/left values mimic padding */
     top: 6px;
     left: 6px;
-    width: 45%;
     padding-right: 10px;
     white-space: nowrap;
   }
