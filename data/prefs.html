@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="prefs.css">
+  </head>
   <body>
-    Empty rows will be deleted on save.
     <table id="pref_table">
       <tr id="header">
-        <td>Phrase</td>
-        <td>Rewrite to</td>
-        <td>Ignore case</td>
-        <td>Match Word</td>
+        <th>Phrase
+        <th>Rewrite to
+        <th>Ignore case
+        <th>Match word
       </tr>
     </table>
-    <button id="add_button" type="button">Add Rule</button>
-    <button id="save_button" type="button">Save</button>
+    <div class="button_group">
+      <button id="add_button" type="button">Add Rule</button>
+      <button id="save_button" type="button">Save</button>
+      <span id="saved_text" style="display:none;">Saved</span>
+    </div>
+    <div class="info_message">
+      <span style="font-variant:small-caps;font-weight:bold;">Note: </span>
+      Empty rows are not saved.</div>
   </body>
 </html>

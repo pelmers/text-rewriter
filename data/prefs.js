@@ -31,6 +31,7 @@ function appendRow(fr, to, ic, mw) {
     table.appendChild(tr);
 }
 
+var saveTimeout;
 // Collect all row data and send back on port.
 save.addEventListener('click', function() {
     var data = [],
@@ -47,6 +48,12 @@ save.addEventListener('click', function() {
         });
     }
     self.port.emit(tag_out, JSON.stringify(data));
+    document.querySelector("#saved_text").style.display = 'inline';
+    if (saveTimeout)
+        window.clearTimeout(saveTimeout);
+    saveTimeout = window.setTimeout(function() {
+        document.querySelector("#saved_text").style.display = 'none';
+    }, 800);
 });
 
 add.addEventListener('click', function() {
