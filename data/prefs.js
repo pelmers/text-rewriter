@@ -18,17 +18,22 @@ function makeTD(type, value, checked) {
 }
 
 // Append a row to the table with given values for inputs.
-function appendRow(fr, to, ic, mw) {
+function appendRow(data) {
     var tr = document.createElement("tr"),
-        phrase = makeTD("text", fr),
-        replace = makeTD("text", to);
-        case_box = makeTD("checkbox", null, ic);
-        whole_box = makeTD("checkbox", null, mw);
+        phrase = makeTD("text", data.from),
+        replace = makeTD("text", data.to),
+        case_box = makeTD("checkbox", null, data.ic),
+        whole_box = makeTD("checkbox", null, data.mw);
     tr.appendChild(phrase);
     tr.appendChild(replace);
     tr.appendChild(case_box);
     tr.appendChild(whole_box);
     table.appendChild(tr);
+}
+
+// Append an empty row to the table.
+function appendEmptyRow() {
+    appendRow({from:"", to:"", ic:false, mw:false});
 }
 
 var saveTimeout;
@@ -57,7 +62,7 @@ save.addEventListener('click', function() {
 });
 
 add.addEventListener('click', function() {
-    appendRow("", "", false);
+    appendEmptyRow();
 });
 
 // Receive data on port and add to the table.
@@ -65,14 +70,10 @@ self.port.on(tag, function(data) {
     var replacements = JSON.parse(data);
     // put the data into the page
     for (var i = 0; i < replacements.length; i++) {
-        var fr = replacements[i].from,
-            to = replacements[i].to,
-            ic = replacements[i].ic;
-            mw = replacements[i].mw;
-        appendRow(fr, to, ic, mw)
+        appendRow(replacements[i]);
     }
     // make sure we have at least 3 rows in the table
     for (var i = replacements.length; i < 3; i++) {
-        appendRow("", "", false, false);
+        appendEmptyRow();
     }
 });

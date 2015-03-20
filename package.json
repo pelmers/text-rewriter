@@ -3,9 +3,9 @@
   "title": "Text Rewriter",
   "id": "jid1-SH1E6mmYtBsebw",
   "description": "Replace specified phrases on a page",
-  "author": "new_one",
+  "author": "Peter Elmers",
   "license": "MPL 2.0",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "preferences": [{
       "name": "Preferences",
       "title": "Manage rewrite patterns",
