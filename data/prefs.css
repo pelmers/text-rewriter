@@ -25,6 +25,9 @@ td, th {
   font-style: italic;
   font-size: 0.9em;
 }
+#moveup, #delrow {
+  cursor: pointer;
+}
 
 /* borrowed from: https://css-tricks.com/responsive-data-tables/ */
 @media all and (max-device-width: 719px) {
