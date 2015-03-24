@@ -2,15 +2,18 @@ var tag = "rewrites",
     tag_out = "words_in",
     table = document.getElementById("pref_table"),
     save = document.getElementById("save_button"),
-    add = document.getElementById("add_button"),
-    // html code for adding sorting buttons to each row.
-    moveup = "<span id='moveup'>▲</span>",
-    delrow = "<span id='delrow'>☓</span>",
-    sortingHTML = "<span style='float:right;'>"+moveup+delrow+"</span>";
+    add = document.getElementById("add_button");
 
-// Make an input inside of a td element with given value and checked
-// Append stuff html code at the end of the input.
-function makeTD(type, value, checked, stuff) {
+// Make a span element with the given text and class.
+function makeSpan(cl, text) {
+    var sp = document.createElement('span');
+    sp.appendChild(document.createTextNode(text));
+    sp.classList.add(cl);
+    return sp;
+}
+
+// Make an input inside of a td element with given value and checked.
+function makeTD(type, value, checked) {
     var td = document.createElement('td'),
         inp = document.createElement('input');
     inp.type = type;
@@ -18,8 +21,6 @@ function makeTD(type, value, checked, stuff) {
         inp.value = value;
     if (checked)
         inp.checked = checked;
-    if (stuff)
-        td.innerHTML = stuff;
     td.insertBefore(inp, td.firstChild)
     return td;
 }
@@ -30,14 +31,20 @@ function appendRow(data) {
         phrase = makeTD("text", data.from),
         replace = makeTD("text", data.to),
         case_box = makeTD("checkbox", null, data.ic),
-        whole_box = makeTD("checkbox", null, data.mw, sortingHTML);
+        whole_box = makeTD("checkbox", null, data.mw),
+        moveup = makeSpan('moveup', '▲'),
+        delrow = makeSpan('delrow', '☓');
+    moveup.style.float = 'right';
+    delrow.style.float = 'right';
+    whole_box.appendChild(delrow);
+    whole_box.appendChild(moveup);
     tr.appendChild(phrase);
     tr.appendChild(replace);
     tr.appendChild(case_box);
     tr.appendChild(whole_box);
     table.appendChild(tr);
-    attachDelRowListener(tr.querySelector("#delrow"));
-    attachMoveUpListener(tr.querySelector("#moveup"));
+    attachDelRowListener(tr.querySelector(".delrow"));
+    attachMoveUpListener(tr.querySelector(".moveup"));
 }
 
 // Append an empty row to the table.
@@ -63,7 +70,7 @@ function attachMoveUpListener(itm) {
             // can't move top element up
             var thisRow = e.parentNode.parentNode.parentNode;
             if (thisRow.rowIndex > 1) {
-                var prevRow = e.parentNode.parentNode.parentNode.previousSibling;
+                var prevRow = e.parentNode.parentNode.previousSibling;
                 swapRows(prevRow, thisRow);
             }
         });
@@ -74,7 +81,7 @@ function attachMoveUpListener(itm) {
 function attachDelRowListener(itm) {
     (function(e) {
         e.addEventListener('click', function() {
-            table.deleteRow(e.parentNode.parentNode.parentNode.rowIndex);
+            table.deleteRow(e.parentNode.parentNode.rowIndex);
         });
     })(itm);
 }
