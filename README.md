@@ -1,13 +1,36 @@
-Text Rewriter
-=============
+Text Rewriter CT Edition
+========================
 
-A small Firefox plugin to rewrite customizable patterns in a page as something else.
-Created mostly for personal amusement, inspired by [XKCD #1288](http://xkcd.com/1288/).
-By default this provides a "mispell" -> "misspell" replacement.
+> Whan that Aprille with his shoures soote
+> 
+> The droghte of Marche hath perced to the roote,
+> 
+> And bathed every veyne in swich licour,
+> 
+> Of which vertu engendred is the flour;
+> 
+> Whan Zephirus eek with his swete breeth
+> 
+> Inspired hath in every holt and heeth
+> 
+> The tendre croppes, and the yonge sonne
+> 
+> Hath in the Ram his halfe cours y-ronne,
+> 
+> And smale fowles maken melodye,
+> 
+> That slepen al the night with open ye,
+> 
+> (So priketh hem nature in hir corages:
+> 
+> Than longen folk to goon on pilgrimages,
+> 
+> And palmers for to seken straunge strondes,
+> 
+> To ferne halwes, couthe in sondry londes;
+> 
+> And specially, from every shires ende
+> 
+> Of Engelond, to Caunterbury they wende.
 
-The plugin supports any Javascript regular expressions, including using
-backrefs and captures. We just visit the visible text nodes on the page and use
-nodeValue.replace for each provided pattern. This means if there is an
-overlapping pair of patterns A -> B and B -> C, then A - > C is shown.
-
-[Install the latest release](https://github.com/pelmers/moz-text-rewriter/releases)
+[Install](https://github.com/pelmers/moz-text-rewriter/releases)
