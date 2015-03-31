@@ -68,9 +68,9 @@ function attachMoveUpListener(itm) {
     (function(e) {
         e.addEventListener('click', function() {
             // can't move top element up
-            var thisRow = e.parentNode.parentNode.parentNode;
+            var thisRow = e.parentNode.parentNode;
             if (thisRow.rowIndex > 1) {
-                var prevRow = e.parentNode.parentNode.previousSibling;
+                var prevRow = thisRow.previousSibling;
                 swapRows(prevRow, thisRow);
             }
         });
