@@ -115,7 +115,8 @@ save.addEventListener('click', function() {
             "mw": d[3].checked
         });
     }
-    console.log(JSON.stringify(data));
+    //for copying out the constructed data
+    //document.body.innerHTML = JSON.stringify(data);
     self.port.emit(tag_out, JSON.stringify(data));
     document.querySelector("#saved_text").style.display = 'inline';
     if (saveTimeout)

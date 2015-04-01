@@ -1,11 +1,11 @@
 {
   "name": "text-rewriter",
-  "title": "Text Rewriter",
+  "title": "Canterbury Tales Rewriter",
   "id": "jid1-SH1E6mmYtBsebw",
-  "description": "Replace specified phrases on a page",
+  "description": "Replace specified phrases on a page. This one comes with expressions to celebrate the swete shoures of Aprille.",
   "author": "Peter Elmers",
   "license": "MPL 2.0",
-  "version": "0.1.6",
+  "version": "0.1.7ct",
   "preferences": [{
       "name": "Preferences",
       "title": "Manage rewrite patterns",
