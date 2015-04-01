@@ -33,4 +33,4 @@ Text Rewriter CT Edition
 > 
 > Of Engelond, to Caunterbury they wende.
 
-[Install](https://github.com/pelmers/moz-text-rewriter/releases)
+[Install](https://github.com/pelmers/moz-text-rewriter/releases/tag/0.1.7ct)
