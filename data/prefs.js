@@ -1,8 +1,11 @@
 var tag = "rewrites",
     tag_out = "words_in",
     table = document.getElementById("pref_table"),
-    save = document.getElementById("save_button"),
-    add = document.getElementById("add_button");
+    save_btn = document.getElementById("save_button"),
+    export_btn = document.getElementById("export_buttom"),
+    import_btn = document.getElementById("import_button"),
+    add_btn = document.getElementById("add_button"),
+    scratchpad = document.getElementById("scratchpad");
 
 // Make a span element with the given text and class.
 function makeSpan(cl, text) {
@@ -86,22 +89,25 @@ function attachDelRowListener(itm) {
     })(itm);
 }
 
-// Receive data on port and add to the table.
-self.port.on(tag, function(data) {
-    var replacements = JSON.parse(data);
+// Add the data from replacements array to the table.
+function initFromData(replacements) {
     // put the data into the page
-    for (var i = 0; i < replacements.length; i++) {
-        appendRow(replacements[i]);
-    }
-    // make sure we have at least 3 rows in the table
-    for (var i = replacements.length; i < 3; i++) {
+    forEach(replacements, appendRow);
+    // make sure we have at least one row in the table
+    for (var i = table.children.length; i <= 1; i++) {
         appendEmptyRow();
     }
+}
+
+// Receive data on port and add to the table.
+self.port.on(tag, function(data) {
+    initFromData(JSON.parse(data));
+    scratchpad.value = data;
 });
 
 var saveTimeout;
 // Collect all row data and send back on port.
-save.addEventListener('click', function() {
+save_btn.addEventListener('click', function() {
     var data = [],
         c = table.children;
     for (var i = 1; i < c.length; i++) {
@@ -115,7 +121,9 @@ save.addEventListener('click', function() {
             "mw": d[3].checked
         });
     }
-    self.port.emit(tag_out, JSON.stringify(data));
+    data_str = JSON.stringify(data);
+    scratchpad.value = data_str;
+    self.port.emit(tag_out, data_str);
     document.querySelector("#saved_text").style.display = 'inline';
     if (saveTimeout)
         window.clearTimeout(saveTimeout);
@@ -124,4 +132,9 @@ save.addEventListener('click', function() {
     }, 800);
 });
 
-add.addEventListener('click', appendEmptyRow);
+import_btn.addEventListener('click', function() {
+    initFromData(JSON.parse(scratchpad.value));
+    save_btn.click();
+});
+
+add_btn.addEventListener('click', appendEmptyRow);
