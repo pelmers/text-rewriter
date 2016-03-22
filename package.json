@@ -1,7 +1,8 @@
 {
   "name": "text-rewriter",
   "title": "Text Rewriter",
-  "id": "jid1-SH1E6mmYtBsebw",
+  "main": "lib/main.js",
+  "id": "jid1-SH1E6mmYtBsebw@jetpack",
   "description": "Replace specified phrases on a page",
   "author": "Peter Elmers",
   "license": "MPL 2.0",
@@ -11,5 +12,9 @@
       "title": "Manage rewrite patterns",
       "label": "Preferences",
       "type": "control"
-  }]
+  }],
+  "engines": {
+      "firefox": ">=38.0a1",
+      "fennec": ">=38.0a1"
+  }
 }
