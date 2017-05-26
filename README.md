@@ -11,3 +11,16 @@ nodeValue.replace for each provided pattern. This means if there is an
 overlapping pair of patterns A -> B and B -> C, then A - > C is shown.
 
 [Install the latest release](https://github.com/pelmers/moz-text-rewriter/releases)
+
+Development
+-----------
+
+This addon uses [Jetpack](https://developer.mozilla.org/en-US/Add-ons/SDK).
+Once it's installed you can run it with
+
+```bash
+jpm run --prefs test/prefs.json
+```
+
+The _prefs.json_ file is necessary to allow unsigned addons be installed.
+In our case we're testing so, we go ahead and activate it.
