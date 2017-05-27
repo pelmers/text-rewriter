@@ -1,12 +1,9 @@
-#pref_table, .button_group, .info_message, #scratchpad {
-  margin-left: 10%;
-}
 #scratchpad {
   width: 60%;
   height: 200px;
 }
 #pref_table {
-  width: 80%;
+  width: 100%;
   border-collapse: collapse;
 }
 /* stripes */
