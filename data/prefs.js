@@ -17,7 +17,8 @@ const table = document.getElementById("pref_table"),
         "from": "mispell",
         "to": "misspell",
         "ic": false,
-        "mw": false
+        "mw": false,
+        "sc": false,
     }];
 
 // Make a span element with the given text and class.
@@ -48,20 +49,22 @@ function appendRow(data) {
         replace = makeTD("text", data.to),
         case_box = makeTD("checkbox", null, data.ic),
         whole_box = makeTD("checkbox", null, data.mw),
+        smart_box = makeTD("checkbox", null, data.sc),
         delrow = makeSpan('delrow', 'x');
     delrow.style.float = 'right';
-    whole_box.appendChild(delrow);
+    smart_box.appendChild(delrow);
     tr.appendChild(phrase);
     tr.appendChild(replace);
     tr.appendChild(case_box);
     tr.appendChild(whole_box);
+    tr.appendChild(smart_box);
     table.appendChild(tr);
     attachDelRowListener(tr.querySelector(".delrow"));
 }
 
 // Append an empty row to the table.
 function appendEmptyRow() {
-    appendRow({from:"", to:"", ic:false, mw:false});
+    appendRow({from:"", to:"", ic:false, mw:false, sc:false});
 }
 
 // Call func(elem) on each element of arr.
@@ -109,7 +112,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 "from": d[0].value,
                 "to": d[1].value,
                 "ic": d[2].checked,
-                "mw": d[3].checked
+                "mw": d[3].checked,
+                "sc": d[4].checked
             });
         }
         scratchpad.value = JSON.stringify(data);
