@@ -31,13 +31,17 @@ function sentenceCase(str) {
 function dedup(replacements) {
     const deduped = [];
     for (let i = 0; i < replacements.length; i++) {
+        const a = replacements[i];
+        let unique = true;
         for (let j = i + 1; j < replacements.length; j++) {
-            const a = replacements[i];
             const b = replacements[j];
-            if (a.from != b.from || a.to != b.to ||
-                a.ic != b.ic || a.mw != b.mw || a.sc != b.sc) {
-                deduped.push(a);
+            if (a.from == b.from && a.to == b.to &&
+                a.ic === b.ic && a.mw === b.mw && a.sc === b.sc) {
+                unique = false;
             }
+        }
+        if (unique) {
+            deduped.push(a);
         }
     }
     return deduped;
