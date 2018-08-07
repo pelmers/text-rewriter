@@ -1,10 +1,4 @@
-// Firefox = browser, Chrome = chrome.
-let api;
-try {
-    api = chrome;
-} catch(e) {
-    api = browser;
-}
+const api = chrome;
 
 const storage = api.storage.local;
 
@@ -19,7 +13,8 @@ const table = document.getElementById("pref_table"),
         "ic": false,
         "mw": false,
         "sc": false,
-    }];
+    }],
+    use_dynamic_cb = document.getElementById("use_dynamic_checkbox");
 
 // Make a span element with the given text and class.
 function makeSpan(cl, text) {
@@ -95,9 +90,14 @@ function initFromData(replacements) {
 let saveTimeout;
 // When document ready, add current preferences and attach buttons.
 document.addEventListener('DOMContentLoaded', function () {
-    storage.get({ replacements: default_replacements }, function (data) {
+    storage.get({ replacements: default_replacements, use_dynamic: true }, function (data) {
         initFromData(data.replacements);
         scratchpad.value = JSON.stringify(data.replacements);
+        use_dynamic_cb.checked = data.use_dynamic;
+    });
+
+    use_dynamic_cb.addEventListener("change", function() {
+        storage.set({ use_dynamic: use_dynamic_cb.checked });
     });
 
     // Collect all row data and save to local storage.

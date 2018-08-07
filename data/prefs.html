@@ -4,9 +4,15 @@
     <link rel="stylesheet" type="text/css" href="prefs.css">
   </head>
   <body>
-    Smart case tries to match case on replace to/from:
-    e.g. the rule cloud -> butt will also add rules for
-    Cloud -> Butt and CLOUD -> BUTT.
+    <div class="experimental_group">
+      <input type="checkbox" value=false id="use_dynamic_checkbox" />
+      (EXPERIMENTAL) Replace text dynamically on page changes
+    </div>
+    <p>
+      Smart case tries to match case on replace to/from:
+      e.g. the rule cloud -> butt will also add rules for
+      Cloud -> Butt and CLOUD -> BUTT.
+    </p>
     <table id="pref_table">
       <tr id="header">
         <th>Phrase
