@@ -100,18 +100,24 @@ function makeRegexp(rep) {
 
 // Recursively replace all the Text nodes in the DOM subtree rooted at target.
 // Return {totalCount: number, visited: number} representing number of replacements and nodes visited.
-function treeReplace(target, replacements) {
+function treeReplace(target, replacements, visitSet) {
     const tree = document.createTreeWalker(target, NodeFilter.SHOW_TEXT, null, false);
-    let cur = tree.nextNode();
+    let cur;
     let totalCount = 0;
     let visited = 0;
     if (replacements.length > 0) {
-        while (cur != null && visited < NODE_LIMIT) {
+        while ((cur = tree.nextNode()) != null && visited < NODE_LIMIT) {
+            if (visitSet != null) {
+                if (visitSet.has(cur)) {
+                    continue;
+                } else {
+                    visitSet.add(cur);
+                }
+            }
             const {text, count} = performReplacements(cur.nodeValue, replacements);
             cur.nodeValue = text;
             totalCount += count;
             visited++;
-            cur = tree.nextNode();
         }
     }
     return {totalCount, visited};
@@ -138,7 +144,7 @@ api.runtime.onMessage.addListener(function (message) {
     if (event === "textRewriter") {
         console.time(event);
         // handle response, which has a list of replacements
-        const {tabId, use_dynamic} = message;
+        const {tabId, use_dynamic2} = message;
         const replacements = expandAutoCaseReplacements(message.replacements);
         // Bind a regexp to each replacement object.
         replacements.forEach((replacement) => {
@@ -149,18 +155,18 @@ api.runtime.onMessage.addListener(function (message) {
         console.timeEnd(event);
         console.info(visited, "nodes visited");
         api.runtime.sendMessage({ event: "replaceCount" , totalCount, tabId });
-        if (use_dynamic) {
+        if (use_dynamic2) {
             // Attach the mutation observer after we've finished our initial replacements.
             let dynamicCount = totalCount;
             const observeParams = {characterData: true, childList: true, subtree: true};
             const observer = new MutationObserver(function(mutations) {
                 // Make sure the changes the observer makes don't re-trigger itself.
                 observer.disconnect();
-                console.time(event);
+                // Keep a map of visited nodes so we don't rewrite same one multiple times.
+                const visitSet = new WeakSet();
                 for (let i = 0; i < mutations.length; i++) {
-                    dynamicCount += treeReplace(mutations[i].target, replacements).totalCount;
+                    dynamicCount += treeReplace(mutations[i].target, replacements, visitSet).totalCount;
                 }
-                console.timeEnd(event);
                 api.runtime.sendMessage({ event: "replaceCount" , totalCount: dynamicCount, tabId });
                 // Reattach ourselves once we're done.
                 observer.observe(document.body, observeParams);

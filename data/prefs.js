@@ -90,14 +90,14 @@ function initFromData(replacements) {
 let saveTimeout;
 // When document ready, add current preferences and attach buttons.
 document.addEventListener('DOMContentLoaded', function () {
-    storage.get({ replacements: default_replacements, use_dynamic: true }, function (data) {
+    storage.get({ replacements: default_replacements, use_dynamic2: false }, function (data) {
         initFromData(data.replacements);
         scratchpad.value = JSON.stringify(data.replacements);
-        use_dynamic_cb.checked = data.use_dynamic;
+        use_dynamic_cb.checked = data.use_dynamic2;
     });
 
     use_dynamic_cb.addEventListener("change", function() {
-        storage.set({ use_dynamic: use_dynamic_cb.checked });
+        storage.set({ use_dynamic2: use_dynamic_cb.checked });
     });
 
     // Collect all row data and save to local storage.
