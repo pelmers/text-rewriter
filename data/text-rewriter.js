@@ -114,6 +114,10 @@ function treeReplace(target, replacements, visitSet) {
                     visitSet.add(cur);
                 }
             }
+            // Skip replacing under the active element, since it may interfere with typing.
+            if (document.activeElement.contains(cur)) {
+                continue;
+            }
             const {text, count} = performReplacements(cur.nodeValue, replacements);
             cur.nodeValue = text;
             totalCount += count;
