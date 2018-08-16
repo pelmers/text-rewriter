@@ -177,7 +177,9 @@ api.runtime.onMessage.addListener(function (message) {
             });
             observer.observe(document.body, observeParams);
             const titleObserver = new MutationObserver(function(mutations) {
+                titleObserver.disconnect();
                 document.title = performReplacements(document.title, replacements).text;
+                titleObserver.observe(document.querySelector('title'), observeParams);
             })
             titleObserver.observe(document.querySelector('title'), observeParams);
         }
