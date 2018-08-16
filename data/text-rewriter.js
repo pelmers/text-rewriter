@@ -113,10 +113,10 @@ function treeReplace(target, replacements, visitSet) {
                 } else {
                     visitSet.add(cur);
                 }
-            }
-            // Skip replacing under the active element, since it may interfere with typing.
-            if (document.activeElement.contains(cur)) {
-                continue;
+                // Skip replacing under the active element if it's not the body, since it may interfere with typing.
+                if (!document.activeElement.contains(document.body) && document.activeElement.contains(cur)) {
+                    continue;
+                }
             }
             const {text, count} = performReplacements(cur.nodeValue, replacements);
             cur.nodeValue = text;
@@ -176,6 +176,10 @@ api.runtime.onMessage.addListener(function (message) {
                 observer.observe(document.body, observeParams);
             });
             observer.observe(document.body, observeParams);
+            const titleObserver = new MutationObserver(function(mutations) {
+                document.title = performReplacements(document.title, replacements).text;
+            })
+            titleObserver.observe(document.querySelector('title'), observeParams);
         }
     }
 });
