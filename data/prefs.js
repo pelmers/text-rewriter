@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
     import_btn.addEventListener('click', function () {
         try {
             initFromData(JSON.parse(scratchpad.value));
-			save_btn.click();
+            save_btn.click();
         } catch (e) {
             error_message.classList.remove('hidden');
             setTimeout(clearErrorMessages, 2000);
