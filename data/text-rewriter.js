@@ -121,14 +121,14 @@ function treeReplace(target, replacements, visitSet) {
 
             // Ignore elements whose content was already changed, to avoid rewriting several times.
             if (!cur.textRewriterModified) {
-				const {text, count} = performReplacements(cur.nodeValue, replacements);
-				cur.nodeValue = text;
-				if (count) {
-					cur.textRewriterModified = true;
-				}
-				totalCount += count;
-				visited++;
-			}
+                const {text, count} = performReplacements(cur.nodeValue, replacements);
+                cur.nodeValue = text;
+                if (count) {
+                    cur.textRewriterModified = true;
+                }
+                totalCount += count;
+                visited++;
+            }
         }
     }
     return {totalCount, visited};
