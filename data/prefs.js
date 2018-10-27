@@ -5,6 +5,7 @@ const storage = api.storage.local;
 const table = document.getElementById("pref_table"),
     save_btn = document.getElementById("save_button"),
     import_btn = document.getElementById("import_button"),
+    purge_btn = document.getElementById("purge_button"),
     add_btn = document.getElementById("add_button"),
     scratchpad = document.getElementById("scratchpad"),
     default_replacements = [{
@@ -129,6 +130,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     import_btn.addEventListener('click', function () {
         initFromData(JSON.parse(scratchpad.value));
+        save_btn.click();
+    });
+
+    purge_btn.addEventListener('click', function () {
+        const rows = table.children;
+        for (let i = rows.length - 1; i >= 1; i--) {
+            table.removeChild(rows[i]);
+        }
+
         save_btn.click();
     });
 
