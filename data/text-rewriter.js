@@ -107,20 +107,13 @@ function treeReplace(target, replacements, visitSet) {
     let visited = 0;
     if (replacements.length > 0) {
         while ((cur = tree.nextNode()) != null && visited < NODE_LIMIT) {
-            if (visitSet != null) {
-                if (visitSet.has(cur)) {
-                    continue;
-                } else {
-                    visitSet.add(cur);
-                }
+            // Ignore elements whose content was already changed, to avoid rewriting several times.
+            if (!cur.textRewriterModified) {
                 // Skip replacing under the active element if it's not the body, since it may interfere with typing.
                 if (!document.activeElement.contains(document.body) && document.activeElement.contains(cur)) {
                     continue;
                 }
-            }
 
-            // Ignore elements whose content was already changed, to avoid rewriting several times.
-            if (!cur.textRewriterModified) {
                 const {text, count} = performReplacements(cur.nodeValue, replacements);
                 cur.nodeValue = text;
                 if (count) {
@@ -173,10 +166,8 @@ api.runtime.onMessage.addListener(function (message) {
             const observer = new MutationObserver(function(mutations) {
                 // Make sure the changes the observer makes don't re-trigger itself.
                 observer.disconnect();
-                // Keep a map of visited nodes so we don't rewrite same one multiple times.
-                const visitSet = new WeakSet();
                 for (let i = 0; i < mutations.length; i++) {
-                    dynamicCount += treeReplace(mutations[i].target, replacements, visitSet).totalCount;
+                    dynamicCount += treeReplace(mutations[i].target, replacements).totalCount;
                 }
                 api.runtime.sendMessage({ event: "replaceCount" , totalCount: dynamicCount, tabId });
                 // Reattach ourselves once we're done.
