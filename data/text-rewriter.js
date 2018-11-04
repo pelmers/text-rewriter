@@ -159,6 +159,7 @@ api.runtime.onMessage.addListener(function (message) {
         console.timeEnd(event);
         console.info(visited, "nodes visited");
         api.runtime.sendMessage({ event: "replaceCount" , totalCount, tabId });
+
         if (use_dynamic2) {
             // Attach the mutation observer after we've finished our initial replacements.
             let dynamicCount = totalCount;
@@ -166,8 +167,17 @@ api.runtime.onMessage.addListener(function (message) {
             const observer = new MutationObserver(function(mutations) {
                 // Make sure the changes the observer makes don't re-trigger itself.
                 observer.disconnect();
-                for (let i = 0; i < mutations.length; i++) {
-                    dynamicCount += treeReplace(mutations[i].target, replacements).totalCount;
+				for (let i = 0; i < mutations.length; i++) {
+                    switch (mutations[i].type) {
+                    case 'characterData':
+                        dynamicCount += treeReplace(mutations[i].target, replacements).totalCount;
+                        break;
+                    case 'childList':
+                        for (let c = mutations[i].addedNodes.length - 1; c >= 0; c--) {
+                            dynamicCount += treeReplace(mutations[i].addedNodes[c], replacements).totalCount;
+                        }
+                        break;
+                    }
                 }
                 api.runtime.sendMessage({ event: "replaceCount" , totalCount: dynamicCount, tabId });
                 // Reattach ourselves once we're done.
@@ -178,7 +188,7 @@ api.runtime.onMessage.addListener(function (message) {
                 titleObserver.disconnect();
                 document.title = performReplacements(document.title, replacements).text;
                 titleObserver.observe(document.querySelector('title'), observeParams);
-            })
+            });
             titleObserver.observe(document.querySelector('title'), observeParams);
         }
     }
