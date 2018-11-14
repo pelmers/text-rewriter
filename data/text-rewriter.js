@@ -107,19 +107,20 @@ function treeReplace(target, replacements, visitSet) {
     let visited = 0;
     if (replacements.length > 0) {
         while ((cur = tree.nextNode()) != null && visited < NODE_LIMIT) {
-            if (visitSet != null) {
-                if (visitSet.has(cur)) {
-                    continue;
-                } else {
-                    visitSet.add(cur);
-                }
-                // Skip replacing under the active element if it's not the body, since it may interfere with typing.
-                if (!document.activeElement.contains(document.body) && document.activeElement.contains(cur)) {
-                    continue;
-                }
+            if (visitSet.has(cur)) {
+                continue;
             }
+
+            // Skip replacing under the active element if it's not the body, since it may interfere with typing.
+            if (!document.activeElement.contains(document.body) && document.activeElement.contains(cur)) {
+                continue;
+            }
+
             const {text, count} = performReplacements(cur.nodeValue, replacements);
             cur.nodeValue = text;
+            if (count) {
+                visitSet.add(cur);
+            }
             totalCount += count;
             visited++;
         }
@@ -154,8 +155,11 @@ api.runtime.onMessage.addListener(function (message) {
         replacements.forEach((replacement) => {
             replacement.regexp = makeRegexp(replacement);
         });
+        // Keep a map of text nodes whose content was already changed, to avoid rewriting several times.
+        const visitSet = new WeakSet();
+
         document.title = performReplacements(document.title, replacements).text;
-        const {visited, totalCount} = treeReplace(document.body, replacements);
+        const {visited, totalCount} = treeReplace(document.body, replacements, visitSet);
         console.timeEnd(event);
         console.info(visited, "nodes visited");
         api.runtime.sendMessage({ event: "replaceCount" , totalCount, tabId });
@@ -166,10 +170,17 @@ api.runtime.onMessage.addListener(function (message) {
             const observer = new MutationObserver(function(mutations) {
                 // Make sure the changes the observer makes don't re-trigger itself.
                 observer.disconnect();
-                // Keep a map of visited nodes so we don't rewrite same one multiple times.
-                const visitSet = new WeakSet();
                 for (let i = 0; i < mutations.length; i++) {
-                    dynamicCount += treeReplace(mutations[i].target, replacements, visitSet).totalCount;
+                    switch (mutations[i].type) {
+                    case 'characterData':
+                        dynamicCount += treeReplace(mutations[i].target, replacements, visitSet).totalCount;
+                        break;
+                    case 'childList':
+                        for (let c = mutations[i].addedNodes.length - 1; c >= 0; c--) {
+                            dynamicCount += treeReplace(mutations[i].addedNodes[c], replacements, visitSet).totalCount;
+                        }
+                        break;
+                    }
                 }
                 api.runtime.sendMessage({ event: "replaceCount" , totalCount: dynamicCount, tabId });
                 // Reattach ourselves once we're done.
@@ -180,7 +191,7 @@ api.runtime.onMessage.addListener(function (message) {
                 titleObserver.disconnect();
                 document.title = performReplacements(document.title, replacements).text;
                 titleObserver.observe(document.querySelector('title'), observeParams);
-            })
+            });
             titleObserver.observe(document.querySelector('title'), observeParams);
         }
     }

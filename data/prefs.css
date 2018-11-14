@@ -37,13 +37,13 @@ td, th {
   table, thead, tbody, th, td, tr {
     display: block;
   }
-  #pref_table, .button_group, .info_message {
+  #pref_table, .button_group, .info_message, #error_message {
     margin-left: 0;
   }
   #pref_table {
     width: auto;
   }
-  .button_group, .info_message, #saved_text {
+  .button_group, .info_message, #error_message, #saved_text {
     font-size: 2em;
   }
   .button_group > button {
@@ -91,4 +91,8 @@ td, th {
 .experimental_group {
   font-style: italic;
   font-size: larger;
+}
+
+.hidden {
+  display: none;
 }

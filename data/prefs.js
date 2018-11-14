@@ -5,6 +5,7 @@ const storage = api.storage.local;
 const table = document.getElementById("pref_table"),
     save_btn = document.getElementById("save_button"),
     import_btn = document.getElementById("import_button"),
+    purge_btn = document.getElementById("purge_button"),
     add_btn = document.getElementById("add_button"),
     scratchpad = document.getElementById("scratchpad"),
     default_replacements = [{
@@ -14,7 +15,8 @@ const table = document.getElementById("pref_table"),
         "mw": false,
         "sc": false,
     }],
-    use_dynamic_cb = document.getElementById("use_dynamic_checkbox");
+    use_dynamic_cb = document.getElementById("use_dynamic_checkbox"),
+    error_message = document.getElementById("error_message");
 
 // Make a span element with the given text and class.
 function makeSpan(cl, text) {
@@ -87,6 +89,10 @@ function initFromData(replacements) {
     }
 }
 
+function clearErrorMessages () {
+    error_message.classList.add('hidden');
+}
+
 let saveTimeout;
 // When document ready, add current preferences and attach buttons.
 document.addEventListener('DOMContentLoaded', function () {
@@ -128,7 +134,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     import_btn.addEventListener('click', function () {
-        initFromData(JSON.parse(scratchpad.value));
+        try {
+            initFromData(JSON.parse(scratchpad.value));
+            save_btn.click();
+        } catch (e) {
+            error_message.classList.remove('hidden');
+            setTimeout(clearErrorMessages, 2000);
+        }
+    });
+
+    purge_btn.addEventListener('click', function () {
+        const rows = table.children;
+        for (let i = rows.length - 1; i >= 1; i--) {
+            table.removeChild(rows[i]);
+        }
+
         save_btn.click();
     });
 
