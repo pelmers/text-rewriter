@@ -54,34 +54,34 @@ function expandAutoCaseReplacements(replacements) {
         const rep = replacements[i];
         if (rep.sc && !rep.ic) {
             const smartCases = [
-            {
-                "from": titleCase(rep.from),
-                "to": titleCase(rep.to),
-                "ic": rep.ic,
-                "mw": rep.mw,
-                "sc": rep.sc,
-            },
-            {
-                "from": sentenceCase(rep.from),
-                "to": sentenceCase(rep.to),
-                "ic": rep.ic,
-                "mw": rep.mw,
-                "sc": rep.sc,
-            },
-            {
-                "from": rep.from.toUpperCase(),
-                "to": rep.to.toUpperCase(),
-                "ic": rep.ic,
-                "mw": rep.mw,
-                "sc": rep.sc,
-            },
-            {
-                "from": rep.from.toLowerCase(),
-                "to": rep.to.toLowerCase(),
-                "ic": rep.ic,
-                "mw": rep.mw,
-                "sc": rep.sc,
-            }];
+                {
+                    "from": titleCase(rep.from),
+                    "to": titleCase(rep.to),
+                    "ic": rep.ic,
+                    "mw": rep.mw,
+                    "sc": rep.sc,
+                },
+                {
+                    "from": sentenceCase(rep.from),
+                    "to": sentenceCase(rep.to),
+                    "ic": rep.ic,
+                    "mw": rep.mw,
+                    "sc": rep.sc,
+                },
+                {
+                    "from": rep.from.toUpperCase(),
+                    "to": rep.to.toUpperCase(),
+                    "ic": rep.ic,
+                    "mw": rep.mw,
+                    "sc": rep.sc,
+                },
+                {
+                    "from": rep.from.toLowerCase(),
+                    "to": rep.to.toLowerCase(),
+                    "ic": rep.ic,
+                    "mw": rep.mw,
+                    "sc": rep.sc,
+                }];
             newReplacements = newReplacements.concat(dedup(smartCases));
         } else {
             newReplacements.push(rep);
@@ -92,10 +92,10 @@ function expandAutoCaseReplacements(replacements) {
 
 // Return regexp for the replacement.
 function makeRegexp(rep) {
-    const ign = (rep.ic)?"i":"",
-          start = (rep.mw)?"\\b":"",
-          end = (rep.mw)?"\\b":"";
-    return new RegExp(start+rep.from+end, "g"+ign);
+    const ign = (rep.ic) ? "i" : "",
+        start = (rep.mw) ? "\\b" : "",
+        end = (rep.mw) ? "\\b" : "";
+    return new RegExp(start + rep.from + end, "g" + ign);
 }
 
 // Recursively replace all the Text nodes in the DOM subtree rooted at target.
@@ -118,13 +118,13 @@ function treeReplace(target, replacements, visitSet) {
                     continue;
                 }
             }
-            const {text, count} = performReplacements(cur.nodeValue, replacements);
+            const { text, count } = performReplacements(cur.nodeValue, replacements);
             cur.nodeValue = text;
             totalCount += count;
             visited++;
         }
     }
-    return {totalCount, visited};
+    return { totalCount, visited };
 }
 
 // Call text.replace on each regex in replacements.
@@ -137,33 +137,33 @@ function performReplacements(text, replacements) {
         count += (matches != null) ? matches.length : 0;
         text = text.replace(re, replacements[i].to);
     }
-    return {text, count};
+    return { text, count };
 }
 
 // Tell the background script a content page has loaded.
 api.runtime.sendMessage({ event: "pageLoad" });
 
 api.runtime.onMessage.addListener(function (message) {
-    const {event} = message;
+    const { event } = message;
     if (event === "textRewriter") {
         console.time(event);
         // handle response, which has a list of replacements
-        const {tabId, use_dynamic2} = message;
+        const { tabId, use_dynamic2 } = message;
         const replacements = expandAutoCaseReplacements(message.replacements);
         // Bind a regexp to each replacement object.
         replacements.forEach((replacement) => {
             replacement.regexp = makeRegexp(replacement);
         });
         document.title = performReplacements(document.title, replacements).text;
-        const {visited, totalCount} = treeReplace(document.body, replacements);
+        const { visited, totalCount } = treeReplace(document.body, replacements);
         console.timeEnd(event);
         console.info(visited, "nodes visited");
-        api.runtime.sendMessage({ event: "replaceCount" , totalCount, tabId });
+        api.runtime.sendMessage({ event: "replaceCount", totalCount, tabId });
         if (use_dynamic2) {
             // Attach the mutation observer after we've finished our initial replacements.
             let dynamicCount = totalCount;
-            const observeParams = {characterData: true, childList: true, subtree: true};
-            const observer = new MutationObserver(function(mutations) {
+            const observeParams = { characterData: true, childList: true, subtree: true };
+            const observer = new MutationObserver(function (mutations) {
                 // Make sure the changes the observer makes don't re-trigger itself.
                 observer.disconnect();
                 // Keep a map of visited nodes so we don't rewrite same one multiple times.
@@ -171,12 +171,12 @@ api.runtime.onMessage.addListener(function (message) {
                 for (let i = 0; i < mutations.length; i++) {
                     dynamicCount += treeReplace(mutations[i].target, replacements, visitSet).totalCount;
                 }
-                api.runtime.sendMessage({ event: "replaceCount" , totalCount: dynamicCount, tabId });
+                api.runtime.sendMessage({ event: "replaceCount", totalCount: dynamicCount, tabId });
                 // Reattach ourselves once we're done.
                 observer.observe(document.body, observeParams);
             });
             observer.observe(document.body, observeParams);
-            const titleObserver = new MutationObserver(function(mutations) {
+            const titleObserver = new MutationObserver(function (mutations) {
                 titleObserver.disconnect();
                 document.title = performReplacements(document.title, replacements).text;
                 titleObserver.observe(document.querySelector('title'), observeParams);

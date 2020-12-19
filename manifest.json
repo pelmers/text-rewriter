@@ -19,6 +19,7 @@
             "js": [
                 "data/text-rewriter.js"
             ],
+            "all_frames": true,
             "run_at": "document_end"
         }
     ],
