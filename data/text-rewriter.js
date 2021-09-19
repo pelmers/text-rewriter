@@ -1,6 +1,13 @@
 const api = chrome;
 
 const NODE_LIMIT = 50000;
+// In case the page or other extensions have their own observers that mutate the page
+// when we change it, we don't want to get into an infinite loop.
+// This const defines the minimum time since the last observer event that the
+// next one is allowed to run.
+// The way it works is that instead of mutating directly in the observer, we add
+// changed nodes to a list and then go through that every Interval time.
+const DYNAMIC_REPLACE_INTERVAL_MS = 2000;
 
 // this is some text => This Is Some Text
 function titleCase(str) {
@@ -101,7 +108,7 @@ function makeRegexp(rep) {
 // Recursively replace all the Text nodes in the DOM subtree rooted at target.
 // Return {totalCount: number, visited: number} representing number of replacements and nodes visited.
 function treeReplace(target, replacements, visitSet) {
-    const tree = document.createTreeWalker(target, NodeFilter.SHOW_TEXT, null, false);
+    const tree = document.createNodeIterator(target, NodeFilter.SHOW_TEXT);
     let cur;
     let totalCount = 0;
     let visited = 0;
@@ -140,6 +147,59 @@ function performReplacements(text, replacements) {
     return { text, count };
 }
 
+function attachChangeObserver(node, replacements, tabId, totalCount) {
+    // Attach the mutation observer after we've finished our initial replacements.
+    let dynamicCount = totalCount;
+    const observeParams = { characterData: true, childList: true, subtree: true };
+    let mutationTargets = [];
+    let flushReplacementsInCooldown = false;
+    let scheduleFlush = false;
+    // The observer just records all the nodes that are changing.
+    const observer = new MutationObserver(function (mutations) {
+        for (let i = 0; i < mutations.length; i++) {
+            if (mutationTargets.length < NODE_LIMIT) {
+                mutationTargets.push(mutations[i]);
+            }
+        }
+        if (mutationTargets.length > 0) {
+            // If we just did a replacement, then schedule the next one
+            if (flushReplacementsInCooldown) {
+                scheduleFlush = true;
+            } else {
+                flushReplacements();
+            }
+        }
+    });
+    observer.observe(node, observeParams);
+
+    function flushReplacements() {
+        // Make sure the changes the observer makes don't re-trigger itself.
+        observer.disconnect();
+        scheduleFlush = false;
+        flushReplacementsInCooldown = true;
+        const currentCount = dynamicCount;
+        // Keep a map of visited nodes so we don't rewrite same one multiple times.
+        const visitSet = new WeakSet();
+        for (const target of mutationTargets) {
+            dynamicCount += treeReplace(target.target, replacements, visitSet).totalCount;
+        }
+        if (dynamicCount > currentCount && totalCount !== null) {
+            api.runtime.sendMessage({ event: "replaceCount", totalCount: dynamicCount, tabId });
+        }
+        mutationTargets = [];
+        // Reattach observer once we're done.
+        observer.observe(node, observeParams);
+
+        setTimeout(function() {
+            flushReplacementsInCooldown = false;
+            // If a replacement was scheduled during the interval, now we can run it
+            if (scheduleFlush) {
+                flushReplacements();
+            }
+        }, DYNAMIC_REPLACE_INTERVAL_MS);
+    }
+}
+
 // Tell the background script a content page has loaded.
 api.runtime.sendMessage({ event: "pageLoad" });
 
@@ -160,28 +220,8 @@ api.runtime.onMessage.addListener(function (message) {
         console.info(visited, "nodes visited");
         api.runtime.sendMessage({ event: "replaceCount", totalCount, tabId });
         if (use_dynamic2) {
-            // Attach the mutation observer after we've finished our initial replacements.
-            let dynamicCount = totalCount;
-            const observeParams = { characterData: true, childList: true, subtree: true };
-            const observer = new MutationObserver(function (mutations) {
-                // Make sure the changes the observer makes don't re-trigger itself.
-                observer.disconnect();
-                // Keep a map of visited nodes so we don't rewrite same one multiple times.
-                const visitSet = new WeakSet();
-                for (let i = 0; i < mutations.length; i++) {
-                    dynamicCount += treeReplace(mutations[i].target, replacements, visitSet).totalCount;
-                }
-                api.runtime.sendMessage({ event: "replaceCount", totalCount: dynamicCount, tabId });
-                // Reattach ourselves once we're done.
-                observer.observe(document.body, observeParams);
-            });
-            observer.observe(document.body, observeParams);
-            const titleObserver = new MutationObserver(function (mutations) {
-                titleObserver.disconnect();
-                document.title = performReplacements(document.title, replacements).text;
-                titleObserver.observe(document.querySelector('title'), observeParams);
-            })
-            titleObserver.observe(document.querySelector('title'), observeParams);
+            attachChangeObserver(document.body, replacements, tabId, totalCount);
+            attachChangeObserver(document.querySelector('title'), replacements, tabId, null);
         }
     }
 });
