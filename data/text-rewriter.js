@@ -187,8 +187,11 @@ function attachChangeObserver(node, replacements, tabId, totalCount) {
             api.runtime.sendMessage({ event: "replaceCount", totalCount: dynamicCount, tabId });
         }
         mutationTargets = [];
+
         // Reattach observer once we're done.
-        observer.observe(node, observeParams);
+        requestIdleCallback(() =>
+            observer.observe(node, observeParams)
+        );
 
         setTimeout(function() {
             flushReplacementsInCooldown = false;
@@ -220,8 +223,10 @@ api.runtime.onMessage.addListener(function (message) {
         console.info(visited, "nodes visited");
         api.runtime.sendMessage({ event: "replaceCount", totalCount, tabId });
         if (use_dynamic2) {
-            attachChangeObserver(document.body, replacements, tabId, totalCount);
-            attachChangeObserver(document.querySelector('title'), replacements, tabId, null);
+            requestIdleCallback(() => {
+                attachChangeObserver(document.body, replacements, tabId, totalCount);
+                attachChangeObserver(document.querySelector('title'), replacements, tabId, null);
+            });
         }
     }
 });
