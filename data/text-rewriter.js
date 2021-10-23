@@ -1,13 +1,6 @@
 const api = chrome;
 
 const NODE_LIMIT = 50000;
-// In case the page or other extensions have their own observers that mutate the page
-// when we change it, we don't want to get into an infinite loop.
-// This const defines the minimum time since the last observer event that the
-// next one is allowed to run.
-// The way it works is that instead of mutating directly in the observer, we add
-// changed nodes to a list and then go through that every Interval time.
-const DYNAMIC_REPLACE_INTERVAL_MS = 2000;
 
 // this is some text => This Is Some Text
 function titleCase(str) {
@@ -147,7 +140,7 @@ function performReplacements(text, replacements) {
     return { text, count };
 }
 
-function attachChangeObserver(node, replacements, tabId, totalCount) {
+function attachChangeObserver(node, replacements, tabId, totalCount, dynamicTimeoutValue) {
     // Attach the mutation observer after we've finished our initial replacements.
     let dynamicCount = totalCount;
     const observeParams = { characterData: true, childList: true, subtree: true };
@@ -189,9 +182,9 @@ function attachChangeObserver(node, replacements, tabId, totalCount) {
         mutationTargets = [];
 
         // Reattach observer once we're done.
-        requestIdleCallback(() =>
-            observer.observe(node, observeParams)
-        );
+        requestIdleCallback(() => {
+            observer.observe(node, observeParams);
+        });
 
         setTimeout(function() {
             flushReplacementsInCooldown = false;
@@ -199,7 +192,7 @@ function attachChangeObserver(node, replacements, tabId, totalCount) {
             if (scheduleFlush) {
                 flushReplacements();
             }
-        }, DYNAMIC_REPLACE_INTERVAL_MS);
+        }, dynamicTimeoutValue);
     }
 }
 
@@ -211,7 +204,7 @@ api.runtime.onMessage.addListener(function (message) {
     if (event === "textRewriter") {
         console.time(event);
         // handle response, which has a list of replacements
-        const { tabId, use_dynamic2 } = message;
+        const { tabId, use_dynamic2, dynamic_timeout_value } = message;
         const replacements = expandAutoCaseReplacements(message.replacements);
         // Bind a regexp to each replacement object.
         replacements.forEach((replacement) => {
@@ -224,8 +217,8 @@ api.runtime.onMessage.addListener(function (message) {
         api.runtime.sendMessage({ event: "replaceCount", totalCount, tabId });
         if (use_dynamic2) {
             requestIdleCallback(() => {
-                attachChangeObserver(document.body, replacements, tabId, totalCount);
-                attachChangeObserver(document.querySelector('title'), replacements, tabId, null);
+                attachChangeObserver(document.body, replacements, tabId, totalCount, dynamic_timeout_value);
+                attachChangeObserver(document.querySelector('title'), replacements, tabId, null, dynamic_timeout_value);
             });
         }
     }

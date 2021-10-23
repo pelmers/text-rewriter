@@ -14,7 +14,9 @@ const table = document.getElementById("pref_table"),
         "mw": false,
         "sc": false,
     }],
-    use_dynamic_cb = document.getElementById("use_dynamic_checkbox");
+    use_dynamic_cb = document.getElementById("use_dynamic_checkbox"),
+    dynamic_timeout = document.getElementById("dynamic_timeout"),
+    dynamic_timeout_group = document.getElementById("dynamic_timeout_group");
 
 // Make a span element with the given text and class.
 function makeSpan(cl, text) {
@@ -90,15 +92,27 @@ function initFromData(replacements) {
 let saveTimeout;
 // When document ready, add current preferences and attach buttons.
 document.addEventListener('DOMContentLoaded', function () {
-    storage.get({ replacements: default_replacements, use_dynamic2: false }, function (data) {
+    function updateDynamicTimeoutVisibility() {
+        if (use_dynamic_cb.checked) {
+            dynamic_timeout_group.style.display = 'block';
+        } else {
+            dynamic_timeout_group.style.display = 'none';
+        }
+    }
+
+    storage.get({
+        replacements: default_replacements,
+        use_dynamic2: false,
+        dynamic_timeout_value: 2000
+    }, function (data) {
         initFromData(data.replacements);
         scratchpad.value = JSON.stringify(data.replacements);
         use_dynamic_cb.checked = data.use_dynamic2;
+        dynamic_timeout.value = data.dynamic_timeout_value;
+        updateDynamicTimeoutVisibility();
     });
 
-    use_dynamic_cb.addEventListener("change", function() {
-        storage.set({ use_dynamic2: use_dynamic_cb.checked });
-    });
+    use_dynamic_cb.addEventListener("change", updateDynamicTimeoutVisibility);
 
     // Collect all row data and save to local storage.
     save_btn.addEventListener('click', function () {
@@ -116,15 +130,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 "sc": d[4].checked
             });
         }
-        scratchpad.value = JSON.stringify(data);
-        storage.set({ replacements: data }, function () {
-            document.querySelector("#saved_text").style.display = 'inline';
-        });
-        if (saveTimeout)
+        if (saveTimeout) {
             window.clearTimeout(saveTimeout);
-        saveTimeout = window.setTimeout(function () {
-            document.querySelector("#saved_text").style.display = 'none';
-        }, 800);
+        }
+        scratchpad.value = JSON.stringify(data);
+        let dynamic_timeout_value;
+        try {
+            dynamic_timeout_value = Number.parseInt(dynamic_timeout.value);
+        } catch (e) {
+            dynamic_timeout_value = 2000;
+        }
+        storage.set({
+            replacements: data,
+            use_dynamic2: use_dynamic_cb.checked,
+            dynamic_timeout_value,
+        }, function () {
+            document.querySelector("#saved_text").style.display = 'inline';
+            saveTimeout = window.setTimeout(function () {
+                document.querySelector("#saved_text").style.display = 'none';
+            }, 800);
+        });
     });
 
     import_btn.addEventListener('click', function () {
