@@ -92,3 +92,10 @@ td, th {
   font-style: italic;
   font-size: larger;
 }
+
+@media (prefers-color-scheme: dark) {
+  body, button, input, td, textarea {
+    background-color: #313131;
+    color: #bfbfbf;
+  }
+}
