@@ -1,7 +1,7 @@
 # Text Rewriter
 
 A small WebExtension to rewrite customizable patterns in a page as something else.
-Created mostly for personal amusement, inspired by [XKCD #1288](http://xkcd.com/1288/).
+Created mostly for personal amusement, inspired by [XKCD #1288](https://xkcd.com/1288/).
 By default this provides a "mispell" -> "misspell" replacement.
 
 The plugin supports any Javascript regular expressions, including using
