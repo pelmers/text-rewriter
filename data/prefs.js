@@ -5,6 +5,7 @@ const storage = api.storage.local;
 const table = document.getElementById("pref_table"),
     save_btn = document.getElementById("save_button"),
     import_btn = document.getElementById("import_button"),
+    clear_btn = document.getElementById("clear_button"),
     add_btn = document.getElementById("add_button"),
     scratchpad = document.getElementById("scratchpad"),
     default_replacements = [{
@@ -80,7 +81,7 @@ function attachDelRowListener(itm) {
 }
 
 // Add the data from replacements array to the table.
-function initFromData(replacements) {
+function appendFromData(replacements) {
     // put the data into the page
     forEach(replacements, appendRow);
     // make sure we have at least one row in the table
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
         use_dynamic2: false,
         dynamic_timeout_value: 2000
     }, function (data) {
-        initFromData(data.replacements);
+        appendFromData(data.replacements);
         scratchpad.value = JSON.stringify(data.replacements);
         use_dynamic_cb.checked = data.use_dynamic2;
         dynamic_timeout.value = data.dynamic_timeout_value;
@@ -153,8 +154,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     import_btn.addEventListener('click', function () {
-        initFromData(JSON.parse(scratchpad.value));
+        appendFromData(JSON.parse(scratchpad.value));
         save_btn.click();
+    });
+
+    clear_btn.addEventListener('click', function () {
+        // the first row is the header, so delete up to that point
+        for (let row = table.rows.length - 1; row > 0; row--) {
+            table.deleteRow(row);
+        }
+        appendFromData([]);
+        // don't save immediately in case it's an accident
     });
 
     add_btn.addEventListener('click', appendEmptyRow);
