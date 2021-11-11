@@ -3,7 +3,7 @@
     "name": "Text Rewriter",
     "description": "Replace specified phrases on a page",
     "author": "Peter Elmers",
-    "version": "1.7.2",
+    "version": "1.7.3",
     "options_ui": {
         "page": "data/prefs.html"
     },
