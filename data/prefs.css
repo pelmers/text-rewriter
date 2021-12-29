@@ -6,6 +6,9 @@
   width: 100%;
   border-collapse: collapse;
 }
+#website_table input {
+  width: calc(100% - 10ch);
+}
 /* stripes */
 tr:nth-of-type(odd) {
   background: #eee;
