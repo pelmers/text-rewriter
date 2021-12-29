@@ -14,3 +14,6 @@ overlapping pair of patterns A -> B and B -> C, then A - > C is shown.
 [Firefox](https://addons.mozilla.org/en-US/firefox/addon/text-rewriter/)
 
 [Chrome](https://chrome.google.com/webstore/detail/abmchgifbehnkekmmfmkkgdbhcphmeoi)
+
+## Latest changes
+- Add preference to make a list of domains exempt from text replacement (https://github.com/pelmers/text-rewriter/issues/6)

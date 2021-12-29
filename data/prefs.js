@@ -1,3 +1,5 @@
+(function() {
+
 const api = chrome;
 
 const storage = api.storage.local;
@@ -169,3 +171,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     add_btn.addEventListener('click', appendEmptyRow);
 });
+
+})();

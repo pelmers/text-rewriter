@@ -2,7 +2,7 @@
   width: 60%;
   height: 200px;
 }
-#pref_table {
+#pref_table, #website_table {
   width: 100%;
   border-collapse: collapse;
 }
@@ -20,7 +20,7 @@ td, th {
   border: 1px solid #ccc;
   text-align: left;
 }
-#saved_text {
+#saved_text, #website_saved_text {
   color: green;
   font-family: sans-serif;
   font-style: italic;
@@ -37,10 +37,10 @@ td, th {
   table, thead, tbody, th, td, tr {
     display: block;
   }
-  #pref_table, .button_group, .info_message {
+  #pref_table, #website_table, .button_group, .info_message {
     margin-left: 0;
   }
-  #pref_table {
+  #pref_table, #website_table {
     width: auto;
   }
   .button_group, .info_message, #saved_text {

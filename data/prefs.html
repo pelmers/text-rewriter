@@ -33,10 +33,20 @@
       <button id="clear_button" type="button">Clear All</button>
       <div id="saved_text" style="display:none;">Saved</div>
     </div>
-    <div class="info_message">
-      <span style="font-variant:small-caps;font-weight:bold;">Note: </span>
-      Empty rows are not saved.</div>
+    <h3>Disabled Sites
+    <table id="website_table">
+      <tr id="website_header">
+        <th>Pattern
+      </tr>
+    </table>
+    <div class="button_group">
+      <button id="website_add_button" type="button">Add Rule</button>
+      <button id="website_save_button" type="button">Save</button>
+      <button id="website_clear_button" type="button">Clear All</button>
+      <div id="website_saved_text" style="display:none;">Saved</div>
+    </div>
     <textarea id="scratchpad"></textarea>
     <script src="prefs.js"></script>
+    <script src="prefs_blocked_sites.js"></script>
   </body>
 </html>
