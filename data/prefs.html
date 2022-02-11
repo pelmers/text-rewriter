@@ -5,11 +5,21 @@
   </head>
   <body>
     <div class="experimental_group">
+      <div>
       <input type="checkbox" value=false id="use_dynamic_checkbox" />
       (EXPERIMENTAL) Replace text dynamically on page changes
+      </div>
       <div id="dynamic_timeout_group">
         <input type="number" value=2000 id="dynamic_timeout" min=1 />
         Dynamic update interval lower bound (milliseconds)
+      </div>
+      <div>
+      <input type="checkbox" value=false id="skip_pre_tags" />
+      Do not replace preformatted text (&lt;pre&gt; tags)
+      </div>
+      <div>
+      <input type="checkbox" value=false id="skip_code_tags" />
+      Do not replace code blocks (&lt;code&gt; tags)
       </div>
     </div>
     <p>

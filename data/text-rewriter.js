@@ -98,10 +98,20 @@ function makeRegexp(rep) {
     return new RegExp(start + rep.from + end, "g" + ign);
 }
 
+// Return whether the given node has any parent of given selector
+function hasParentOfSelector(node, selector) {
+    // #text nodes do not have a 'closest' method
+    if (node.nodeType === Node.TEXT_NODE) {
+        node = node.parentNode;
+    }
+    return (node != null) && ('closest' in node) && (node.closest(selector) != null);
+}
+
 // Recursively replace all the Text nodes in the DOM subtree rooted at target.
 // Return {totalCount: number, visited: number} representing number of replacements and nodes visited.
-function treeReplace(target, replacements, visitSet) {
+function treeReplace(target, replacements, options, visitSet) {
     const tree = document.createNodeIterator(target, NodeFilter.SHOW_TEXT);
+    const {skip_pre_tags, skip_code_tags} = options;
     let cur;
     let totalCount = 0;
     let visited = 0;
@@ -113,10 +123,16 @@ function treeReplace(target, replacements, visitSet) {
                 } else {
                     visitSet.add(cur);
                 }
-                // Skip replacing under the active element if it's not the body, since it may interfere with typing.
-                if (!document.activeElement.contains(document.body) && document.activeElement.contains(cur)) {
-                    continue;
-                }
+            }
+            // Skip replacing under the active element if it's not the body, since it may interfere with typing.
+            if (!document.activeElement.contains(document.body) && document.activeElement.contains(cur)) {
+                continue;
+            }
+            if (skip_pre_tags && hasParentOfSelector(cur, 'pre')) {
+                continue;
+            }
+            if (skip_code_tags && hasParentOfSelector(cur, 'code')) {
+                continue;
             }
             const { text, count } = performReplacements(cur.nodeValue, replacements);
             cur.nodeValue = text;
@@ -140,7 +156,7 @@ function performReplacements(text, replacements) {
     return { text, count };
 }
 
-function attachChangeObserver(node, replacements, tabId, totalCount, dynamicTimeoutValue) {
+function attachChangeObserver(node, replacements, tabId, totalCount, dynamicTimeoutValue, replaceOptions) {
     // Attach the mutation observer after we've finished our initial replacements.
     let dynamicCount = totalCount;
     const observeParams = { characterData: true, childList: true, subtree: true };
@@ -174,7 +190,7 @@ function attachChangeObserver(node, replacements, tabId, totalCount, dynamicTime
         // Keep a map of visited nodes so we don't rewrite same one multiple times.
         const visitSet = new WeakSet();
         for (const target of mutationTargets) {
-            dynamicCount += treeReplace(target.target, replacements, visitSet).totalCount;
+            dynamicCount += treeReplace(target.target, replacements, replaceOptions, visitSet).totalCount;
         }
         if (dynamicCount > currentCount && totalCount !== null) {
             api.runtime.sendMessage({ event: "replaceCount", totalCount: dynamicCount, tabId });
@@ -204,20 +220,21 @@ api.runtime.onMessage.addListener(function (message) {
     if (event === "textRewriter") {
         console.time(event);
         // handle response, which has a list of replacements
-        const { tabId, use_dynamic2, dynamic_timeout_value } = message;
+        const { tabId, use_dynamic2, dynamic_timeout_value, skip_pre_tags, skip_code_tags } = message;
+        const replaceOptions = {skip_pre_tags, skip_code_tags};
         const replacements = expandAutoCaseReplacements(message.replacements);
         // Bind a regexp to each replacement object.
         replacements.forEach((replacement) => {
             replacement.regexp = makeRegexp(replacement);
         });
         document.title = performReplacements(document.title, replacements).text;
-        const { visited, totalCount } = treeReplace(document.body, replacements);
+        const { visited, totalCount } = treeReplace(document.body, replacements, replaceOptions);
         console.timeEnd(event);
         console.info(visited, "nodes visited");
         api.runtime.sendMessage({ event: "replaceCount", totalCount, tabId });
         if (use_dynamic2) {
             requestIdleCallback(() => {
-                attachChangeObserver(document.body, replacements, tabId, totalCount, dynamic_timeout_value);
+                attachChangeObserver(document.body, replacements, tabId, totalCount, dynamic_timeout_value, replaceOptions);
                 attachChangeObserver(document.querySelector('title'), replacements, tabId, null, dynamic_timeout_value);
             });
         }

@@ -19,7 +19,9 @@ const table = document.getElementById("pref_table"),
     }],
     use_dynamic_cb = document.getElementById("use_dynamic_checkbox"),
     dynamic_timeout = document.getElementById("dynamic_timeout"),
-    dynamic_timeout_group = document.getElementById("dynamic_timeout_group");
+    dynamic_timeout_group = document.getElementById("dynamic_timeout_group"),
+    skip_pre_tags_cb = document.getElementById("skip_pre_tags"),
+    skip_code_tags_cb = document.getElementById("skip_code_tags");
 
 // Make a span element with the given text and class.
 function makeSpan(cl, text) {
@@ -106,11 +108,15 @@ document.addEventListener('DOMContentLoaded', function () {
     storage.get({
         replacements: default_replacements,
         use_dynamic2: false,
-        dynamic_timeout_value: 2000
+        dynamic_timeout_value: 2000,
+        skip_code_tags: false,
+        skip_pre_tags: false
     }, function (data) {
         appendFromData(data.replacements);
         scratchpad.value = JSON.stringify(data.replacements);
         use_dynamic_cb.checked = data.use_dynamic2;
+        skip_code_tags_cb.checked = data.skip_code_tags;
+        skip_pre_tags_cb.checked = data.skip_pre_tags;
         dynamic_timeout.value = data.dynamic_timeout_value;
         updateDynamicTimeoutVisibility();
     });
@@ -147,6 +153,8 @@ document.addEventListener('DOMContentLoaded', function () {
             replacements: data,
             use_dynamic2: use_dynamic_cb.checked,
             dynamic_timeout_value,
+            skip_pre_tags: skip_pre_tags_cb.checked,
+            skip_code_tags: skip_code_tags_cb.checked,
         }, function () {
             document.querySelector("#saved_text").style.display = 'inline';
             saveTimeout = window.setTimeout(function () {
