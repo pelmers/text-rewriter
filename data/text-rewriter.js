@@ -1,5 +1,6 @@
 const api = chrome;
 
+// 50000 nodes is a reasonable limit to not hang the browser
 const NODE_LIMIT = 50000;
 
 // this is some text => This Is Some Text

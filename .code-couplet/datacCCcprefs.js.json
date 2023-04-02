@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "comments": [
+    {
+      "commentRange": {
+        "start": {
+          "line": 171,
+          "char": 0
+        },
+        "end": {
+          "line": 171,
+          "char": 66
+        }
+      },
+      "codeRange": {
+        "start": {
+          "line": 172,
+          "char": 0
+        },
+        "end": {
+          "line": 172,
+          "char": 63
+        }
+      },
+      "codeRelativePath": "",
+      "commentValue": "        // the first row is the header, so delete up to that point",
+      "codeValue": "        for (let row = table.rows.length - 1; row > 0; row--) {",
+      "id": 0
+    }
+  ],
+  "configuration": {
+    "lineComment": "//"
+  }
+}
