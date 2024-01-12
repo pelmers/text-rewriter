@@ -1,0 +1,37 @@
+{
+    "manifest_version": 3,
+    "name": "Text Rewriter",
+    "description": "Replace specified phrases on a page",
+    "author": "Peter Elmers",
+    "version": "2.0.1",
+    "options_ui": {
+        "page": "data/prefs.html"
+    },
+    "action": {
+        "default_icon": "data/icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "js": [
+                "data/text-rewriter.js"
+            ],
+            "all_frames": false,
+            "run_at": "document_idle"
+        }
+    ],
+    "permissions": [
+        "storage",
+        "tabs"
+    ],
+    "background": {
+        "service_worker": "lib/main.js"
+    },
+    "icons": {
+        "48": "data/icon.png",
+        "64": "data/icon64.png"
+    }
+}

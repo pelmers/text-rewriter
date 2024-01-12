@@ -236,7 +236,7 @@ api.runtime.onMessage.addListener(function (message) {
         if (use_dynamic2) {
             requestIdleCallback(() => {
                 attachChangeObserver(document.body, replacements, tabId, totalCount, dynamic_timeout_value, replaceOptions);
-                attachChangeObserver(document.querySelector('title'), replacements, tabId, null, dynamic_timeout_value);
+                attachChangeObserver(document.querySelector('title'), replacements, tabId, null, dynamic_timeout_value, replaceOptions);
             });
         }
     }

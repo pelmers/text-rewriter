@@ -61,3 +61,6 @@ typings/
 
 # Pycharm stuff
 .idea/
+
+# chrome and firefox have slight differences so copy the appropriate one first then package the extension
+manifest.json
