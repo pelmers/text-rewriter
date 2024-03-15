@@ -8,7 +8,7 @@
         "page": "data/prefs.html"
     },
     "browser_action": {
-        "default_icon": "data/icon.png"
+        "default_icon": "data/icon2_fav.png"
     },
     "content_scripts": [
         {
@@ -34,7 +34,7 @@
         "persistent": false
     },
     "icons": {
-        "48": "data/icon.png",
-        "64": "data/icon64.png"
+        "48": "data/icon2_fav.png",
+        "64": "data/icon2_64.png"
     }
 }
