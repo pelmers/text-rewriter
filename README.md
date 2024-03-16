@@ -16,5 +16,7 @@ overlapping pair of patterns A -> B and B -> C, then A - > C is shown.
 [Chrome](https://chrome.google.com/webstore/detail/abmchgifbehnkekmmfmkkgdbhcphmeoi)
 
 ## Latest changes
+- Add new icons (by Spade1345)
+## Last change
 - Add preference to make a list of domains exempt from text replacement (https://github.com/pelmers/text-rewriter/issues/6)
 - Add preference to skip children of `<pre>` and `<code>` tags from replacement

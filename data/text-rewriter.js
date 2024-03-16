@@ -2,7 +2,7 @@ const api = chrome;
 
 const NODE_LIMIT = 50000;
 
-// this is some text => This Is Some Text
+// this is some text => This Is Some Text | proper case handling
 function titleCase(str) {
     const parts = str.split(' ');
     for (let i = 0; i < parts.length; i++) {
@@ -13,7 +13,7 @@ function titleCase(str) {
     return parts.join(' ');
 }
 
-// this is some text => This is some text
+// this is some text => This is some text | sentence case handling
 function sentenceCase(str) {
     const parts = str.split(' ');
     for (let i = 0; i < parts.length; i++) {
@@ -26,7 +26,7 @@ function sentenceCase(str) {
     return parts.join(' ');
 }
 
-// delete duplicate copies of replacements entries.
+// Delete duplicate replacement entries
 function dedup(replacements) {
     const deduped = [];
     for (let i = 0; i < replacements.length; i++) {
