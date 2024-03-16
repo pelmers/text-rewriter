@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="prefs.css">
   </head>
   <body>
+    <h1>Text Rewriter Settings</h1>
     <div class="experimental_group">
       <div>
       <input type="checkbox" value=false id="use_dynamic_checkbox" />
@@ -11,8 +12,7 @@
       </div>
       <div id="dynamic_timeout_group">
         <input type="number" value=2000 id="dynamic_timeout" min=1 />
-        Dynamic update interval lower bound (milliseconds)
-      </div>
+        <abbr title="">Dynamic update interval lower bound (milliseconds)</abbr>
       <div>
       <input type="checkbox" value=false id="skip_pre_tags" />
       Do not replace preformatted text (&lt;pre&gt; tags)
@@ -24,7 +24,7 @@
     </div>
     <p>
       Smart case tries to match case on replace to/from:
-      e.g. the rule cloud -> butt will also add rules for
+      e.g. the rule cloud -> butt will add rules for
       Cloud -> Butt and CLOUD -> BUTT.
     </p>
     <table id="pref_table">
@@ -43,7 +43,7 @@
       <abbr title="Clear all rules in the list"><button id="clear_button" type="button">Clear All</button></abbr>
       <div id="saved_text" style="display:none;">Saved</div>
     </div>
-    <h3>Disabled Sites
+    <h2>Disabled Sites</h2>
     <table id="website_table">
       <tr id="website_header">
         <th>Pattern
